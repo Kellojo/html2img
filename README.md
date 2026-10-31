@@ -52,6 +52,13 @@ docker compose up --build
 The image installs Chromium (with system dependencies) and runs the app as a non-root user.
 The SQLite database lives in the `/data` volume.
 
+Pre-built images are published to **ghcr.io** on every push to `main` and on version tags:
+
+```bash
+docker pull ghcr.io/kellojo/html2img:latest
+docker pull ghcr.io/kellojo/html2img:1.0.0
+```
+
 ## HTTP API
 
 ### `POST /api/v1/export`

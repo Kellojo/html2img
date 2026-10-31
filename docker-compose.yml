@@ -10,6 +10,11 @@ services:
       # ENABLE_SIGNUP: 'true'
       # ENABLE_PASSWORD_LOGIN: 'true'
       # ORIGIN: 'https://html2img.example.com'
+      # OIDC_ONLY: 'false'
+      # OIDC_ISSUER: 'https://auth.example.com'
+      # OIDC_CLIENT_ID: 'html2img'
+      # OIDC_CLIENT_SECRET: 'change-me'
+      # OIDC_SCOPES: 'openid profile email'
     volumes:
       - data:/data
     restart: unless-stopped

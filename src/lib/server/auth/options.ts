@@ -1,7 +1,19 @@
 import type { BetterAuthOptions } from 'better-auth';
+import { genericOAuth } from 'better-auth/plugins';
 import { config } from '../config.js';
 import { getAppSecret } from '../crypto.js';
 import { getDb } from '../db/index.js';
+
+const oidc =
+	config.OIDC_ISSUER && config.OIDC_CLIENT_ID && config.OIDC_CLIENT_SECRET
+		? {
+				providerId: 'oidc',
+				discoveryUrl: `${config.OIDC_ISSUER.replace(/\/$/, '')}/.well-known/openid-configuration`,
+				clientId: config.OIDC_CLIENT_ID,
+				clientSecret: config.OIDC_CLIENT_SECRET,
+				scopes: config.OIDC_SCOPES.split(' ')
+			}
+		: null;
 
 export function authOptions(): BetterAuthOptions {
 	return {
@@ -10,8 +22,8 @@ export function authOptions(): BetterAuthOptions {
 		secret: getAppSecret(),
 		database: getDb(),
 		emailAndPassword: {
-			enabled: config.ENABLE_PASSWORD_LOGIN,
-			disableSignUp: !config.ENABLE_SIGNUP
+			enabled: config.ENABLE_PASSWORD_LOGIN && !config.OIDC_ONLY,
+			disableSignUp: !config.ENABLE_SIGNUP || config.OIDC_ONLY
 		},
 		user: {
 			additionalFields: {
@@ -32,6 +44,7 @@ export function authOptions(): BetterAuthOptions {
 					}
 				}
 			}
-		}
+		},
+		plugins: [...(oidc ? [genericOAuth({ config: [oidc] })] : [])]
 	};
 }

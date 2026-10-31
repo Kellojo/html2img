@@ -10,6 +10,7 @@
 
 	let email = $state('');
 	let password = $state('');
+	let oidcLoading = $state(false);
 	let loading = $state(false);
 	let errorMessage = $state('');
 
@@ -25,6 +26,17 @@
 		if (error) {
 			errorMessage = error.message ?? 'Sign in failed';
 			loading = false;
+		}
+	}
+
+	async function signInWithOidc() {
+		try {
+			oidcLoading = true;
+			await authClient.signIn.social({ provider: 'oidc', callbackURL: '/' });
+		} catch (e) {
+			errorMessage = e instanceof Error ? e.message : 'SSO sign in failed';
+		} finally {
+			oidcLoading = false;
 		}
 	}
 </script>
@@ -55,6 +67,29 @@
 				{loading ? 'Signing in…' : 'Sign in'}
 			</Button>
 		</form>
+	{/if}
+
+	{#if data.authConfig.oidc}
+		<Button
+			variant="outline"
+			onclick={signInWithOidc}
+			disabled={oidcLoading || loading}
+			class="w-full"
+		>
+			{#if oidcLoading}
+				<svg class="size-4 animate-spin" viewBox="0 0 24 24" fill="none">
+					<path
+						d="M12 2a10 10 0 0 1 10 10"
+						stroke="currentColor"
+						stroke-width="3"
+						stroke-linecap="round"
+					/>
+				</svg>
+				Redirecting…
+			{:else}
+				Sign in with SSO
+			{/if}
+		</Button>
 	{/if}
 
 	{#if data.authConfig.signup}

@@ -36,6 +36,11 @@ Copy `.env.example` to `.env` and adjust as needed.
 | `APP_SECRET`              | _(required)_         | Auth secret (≥ 16 chars); generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
 | `ENABLE_SIGNUP`           | `true`               | Allow new account sign-up                                                                                          |
 | `ENABLE_PASSWORD_LOGIN`   | `true`               | Allow email/password login                                                                                         |
+| `OIDC_ONLY`               | `false`              | Disable password login + sign-up (OIDC becomes the only way in)                                                   |
+| `OIDC_ISSUER`             | _(unset)_            | OIDC issuer URL (e.g. `https://auth.nashor.cloud:6002`). Enables SSO when set                                      |
+| `OIDC_CLIENT_ID`          | _(unset)_            | OIDC client ID                                                                                                     |
+| `OIDC_CLIENT_SECRET`      | _(unset)_            | OIDC client secret                                                                                                 |
+| `OIDC_SCOPES`             | `openid profile email` | OIDC scopes to request                                                                                           |
 | `AUTO_PROMOTE_FIRST_USER` | `true`               | Promote the first registered user to admin                                                                         |
 | `PORT`                    | `3000`               | HTTP port                                                                                                          |
 | `HOST`                    | `0.0.0.0`            | Bind address                                                                                                       |

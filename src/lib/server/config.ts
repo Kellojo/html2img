@@ -11,6 +11,11 @@ const schema = z.object({
 	TZ: z.string().default('UTC'),
 	ENABLE_SIGNUP: boolFromString('true'),
 	ENABLE_PASSWORD_LOGIN: boolFromString('true'),
+	OIDC_ONLY: boolFromString('false'),
+	OIDC_ISSUER: z.string().url().optional(),
+	OIDC_CLIENT_ID: z.string().optional(),
+	OIDC_CLIENT_SECRET: z.string().optional(),
+	OIDC_SCOPES: z.string().default('openid profile email'),
 	AUTO_PROMOTE_FIRST_USER: boolFromString('true'),
 	PORT: z.coerce.number().int().min(1).max(65535).default(3000),
 	HOST: z.string().default('0.0.0.0'),
@@ -31,7 +36,15 @@ function load(): Config {
 		const issues = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
 		throw new Error(`Invalid environment configuration: ${issues}`);
 	}
-	return parsed.data;
+	const c = parsed.data;
+	if (c.OIDC_ONLY) {
+		if (!c.OIDC_ISSUER || !c.OIDC_CLIENT_ID || !c.OIDC_CLIENT_SECRET) {
+			throw new Error(
+				'OIDC_ONLY=true requires OIDC_ISSUER, OIDC_CLIENT_ID and OIDC_CLIENT_SECRET'
+			);
+		}
+	}
+	return c;
 }
 
 export const config = load();

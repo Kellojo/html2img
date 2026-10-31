@@ -25,6 +25,12 @@ export function authOptions(): BetterAuthOptions {
 			enabled: config.ENABLE_PASSWORD_LOGIN && !config.OIDC_ONLY,
 			disableSignUp: !config.ENABLE_SIGNUP || config.OIDC_ONLY
 		},
+		account: {
+			accountLinking: {
+				enabled: true,
+				trustedProviders: oidc ? ['oidc'] : []
+			}
+		},
 		user: {
 			additionalFields: {
 				role: { type: 'string', defaultValue: 'user', input: false }

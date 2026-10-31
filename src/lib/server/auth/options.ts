@@ -28,7 +28,8 @@ export function authOptions(): BetterAuthOptions {
 		account: {
 			accountLinking: {
 				enabled: true,
-				trustedProviders: oidc ? ['oidc'] : []
+				trustedProviders: oidc ? ['oidc'] : [],
+				requireLocalEmailVerified: false
 			}
 		},
 		user: {

@@ -1,0 +1,14 @@
+node_modules
+build
+.svelte-kit
+data
+.env
+.env.*
+!.env.example
+.secret
+test-results
+playwright-report
+*.log
+.DS_Store
+.vscode
+.idea

@@ -8,14 +8,9 @@ import { ExportTimeoutError, toBody } from '$lib/server/renderer/render.js';
 import { exportOverrideSchema } from '$lib/server/export-config-schema.js';
 import type { RequestHandler } from './$types';
 
-const bodySchema = z
-	.object({
-		html: z.string().min(1).max(1_000_000),
-		config: z.string().trim().min(1).max(100)
-	})
-	.and(exportOverrideSchema);
+const bodySchema = z.object({ html: z.string().min(1).max(1_000_000) }).and(exportOverrideSchema);
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ params, request }) => {
 	const identity = await resolveApiKeyIdentity(getDb(), request.headers.get('authorization'));
 	if (!identity) return json({ error: 'Missing or invalid API key' }, { status: 401 });
 	if (!identity.scopes.includes('export:create')) {
@@ -27,7 +22,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ error: parsed.error.issues[0]?.message ?? 'Invalid body' }, { status: 400 });
 	}
 
-	const { html, config: configName, ...overrides } = parsed.data;
+	const configName = params.config.trim();
+	const { html, ...overrides } = parsed.data;
 	const row = getExportConfigByName(getDb(), identity.userId, configName);
 	if (!row) return json({ error: `Unknown export config '${configName}'` }, { status: 404 });
 

@@ -3,6 +3,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { MediaQuery } from 'svelte/reactivity';
+	import BookOpenIcon from '@lucide/svelte/icons/book-open';
 	import ImageIcon from '@lucide/svelte/icons/image';
 	import KeyRoundIcon from '@lucide/svelte/icons/key-round';
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
@@ -40,7 +41,8 @@
 
 	const navItems = [
 		{ href: '/', label: 'Export configs', icon: ImageIcon },
-		{ href: '/api-keys', label: 'API keys', icon: KeyRoundIcon }
+		{ href: '/api-keys', label: 'API keys', icon: KeyRoundIcon },
+		{ href: '/api-docs', label: 'API docs', icon: BookOpenIcon }
 	] as const;
 </script>
 

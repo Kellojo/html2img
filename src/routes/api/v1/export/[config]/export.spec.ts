@@ -23,18 +23,18 @@ function seedUsers(db: Db) {
 	).run();
 }
 
-async function call(body: unknown, authorization?: string): Promise<Response> {
+async function call(configName: string, body: unknown, authorization?: string): Promise<Response> {
 	const headers = new Headers({ 'content-type': 'application/json' });
 	if (authorization) headers.set('authorization', authorization);
 	const event = {
 		locals: { user: null, session: null } as unknown as App.Locals,
-		params: {},
-		request: new Request('http://localhost/api/v1/export', {
+		params: { config: configName },
+		request: new Request(`http://localhost/api/v1/export/${encodeURIComponent(configName)}`, {
 			method: 'POST',
 			headers,
 			body: JSON.stringify(body)
 		}),
-		url: new URL('http://localhost/api/v1/export')
+		url: new URL(`http://localhost/api/v1/export/${encodeURIComponent(configName)}`)
 	};
 	return await POST(event as never);
 }
@@ -51,33 +51,31 @@ beforeEach(async () => {
 	});
 });
 
-describe('POST /api/v1/export', () => {
+describe('POST /api/v1/export/:config', () => {
 	it('requires a valid API key', async () => {
-		expect((await call({ html: '<b>x</b>', config: 'email' })).status).toBe(401);
-		expect((await call({ html: '<b>x</b>', config: 'email' }, 'Bearer nope')).status).toBe(401);
+		expect((await call('email', { html: '<b>x</b>' })).status).toBe(401);
+		expect((await call('email', { html: '<b>x</b>' }, 'Bearer nope')).status).toBe(401);
 	});
 
 	it('rejects keys without the export:create scope', async () => {
 		const { rawKey } = await createApiKey(getDb(), { userId: 'u1', label: 'k', scopes: [] });
-		expect((await call({ html: '<b>x</b>', config: 'email' }, `Bearer ${rawKey}`)).status).toBe(
-			403
-		);
+		expect((await call('email', { html: '<b>x</b>' }, `Bearer ${rawKey}`)).status).toBe(403);
 	});
 
 	it('validates the request body', async () => {
 		const { rawKey } = await createApiKey(getDb(), { userId: 'u1', label: 'k' });
-		expect((await call({ config: 'email' }, `Bearer ${rawKey}`)).status).toBe(400);
+		expect((await call('email', {}, `Bearer ${rawKey}`)).status).toBe(400);
 	});
 
 	it('returns 404 for an unknown config', async () => {
 		const { rawKey } = await createApiKey(getDb(), { userId: 'u1', label: 'k' });
-		const res = await call({ html: '<b>x</b>', config: 'missing' }, `Bearer ${rawKey}`);
+		const res = await call('missing', { html: '<b>x</b>' }, `Bearer ${rawKey}`);
 		expect(res.status).toBe(404);
 	});
 
 	it('renders HTML with the named config and records the export', async () => {
 		const { rawKey } = await createApiKey(getDb(), { userId: 'u1', label: 'k' });
-		const res = await call({ html: '<b>hello</b>', config: 'email' }, `Bearer ${rawKey}`);
+		const res = await call('email', { html: '<b>hello</b>' }, `Bearer ${rawKey}`);
 
 		expect(res.status).toBe(200);
 		expect(res.headers.get('content-type')).toBe('image/png');
@@ -99,7 +97,8 @@ describe('POST /api/v1/export', () => {
 	it('applies overrides from the request body', async () => {
 		const { rawKey } = await createApiKey(getDb(), { userId: 'u1', label: 'k' });
 		const res = await call(
-			{ html: '<b>hello</b>', config: 'email', width: 800, format: 'jpeg' },
+			'email',
+			{ html: '<b>hello</b>', width: 800, format: 'jpeg' },
 			`Bearer ${rawKey}`
 		);
 		expect(res.status).toBe(200);
@@ -111,9 +110,15 @@ describe('POST /api/v1/export', () => {
 	it('returns 408 when rendering times out', async () => {
 		const { rawKey } = await createApiKey(getDb(), { userId: 'u1', label: 'k' });
 		vi.mocked(renderToImage).mockRejectedValue(new ExportTimeoutError(10));
-		const res = await call({ html: '<b>x</b>', config: 'email' }, `Bearer ${rawKey}`);
+		const res = await call('email', { html: '<b>x</b>' }, `Bearer ${rawKey}`);
 		expect(res.status).toBe(408);
 		const body = await res.json();
 		expect(body.error).toMatch(/timed out/);
+	});
+
+	it('handles config names with special characters by encoding', async () => {
+		const { rawKey } = await createApiKey(getDb(), { userId: 'u1', label: 'k' });
+		const res = await call('email', { html: '<b>x</b>' }, `Bearer ${rawKey}`);
+		expect(res.status).toBe(200);
 	});
 });

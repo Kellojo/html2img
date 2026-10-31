@@ -66,9 +66,9 @@ docker pull ghcr.io/kellojo/html2img:1.0.0
 
 ## HTTP API
 
-### `POST /api/v1/export`
+### `POST /api/v1/export/:config`
 
-Authenticate with an API key created in the UI:
+Authenticate with an API key created in the UI. The export config name goes in the URL:
 
 ```
 Authorization: Bearer h2i_...
@@ -78,28 +78,33 @@ JSON body:
 
 ```json
 {
-	"html": "<html><body><h1>Hello</h1></body></html>",
-	"config": "email"
+	"html": "<html><body><h1>Hello</h1></body></html>"
 }
 ```
 
-- `config` references an export config by name. Your own config takes precedence over a
-  system/default template with the same name.
-- All export config fields can be overridden inline, e.g. `"width": 1200`, `"height": 630`,
-  `"fullPage": false`, `"format": "jpeg"`, `"quality": 85`, `"deviceScaleFactor": 1`,
-  `"omitBackground": true`, `"css": "body { ... }"`, `"waitUntil": "networkidle"`,
+- `:config` in the URL references an export config by name. Your own config takes
+  precedence over a system/default template with the same name.
+- All export config fields can be overridden inline in the JSON body, e.g.
+  `"width": 1200`, `"height": 630`, `"fullPage": false`, `"format": "jpeg"`,
+  `"quality": 85`, `"deviceScaleFactor": 1`, `"omitBackground": true`,
+  `"css": "body { ... }"`, `"waitUntil": "networkidle"`,
   `"waitForNetworkIdle": true`, `"timeoutMs": 10000`.
 
 On success the response is the raw image bytes with the appropriate `Content-Type`
 (`image/png`, `image/jpeg` or `image/webp`) and an `X-Export-Id` header.
 
+### In-app API docs
+
+Visit `/api-docs` after logging in for a complete reference with copy-paste examples
+for curl, JavaScript, Python, and n8n.
+
 Example with curl:
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/export \
+curl -X POST http://localhost:3000/api/v1/export/email \
   -H "Authorization: Bearer h2i_..." \
   -H "Content-Type: application/json" \
-  -d '{"html":"<b>Hello from n8n</b>","config":"email"}' \
+  -d '{"html":"<b>Hello from n8n</b>"}' \
   -o export.png
 ```
 

@@ -15,7 +15,10 @@ const schema = z.object({
 	PORT: z.coerce.number().int().min(1).max(65535).default(3000),
 	HOST: z.string().default('0.0.0.0'),
 	ORIGIN: z.string().url().optional(),
-	APP_SECRET: z.string().min(16).optional(),
+	APP_SECRET: z.preprocess(
+		(v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
+		z.string().min(16).optional()
+	),
 	EXPORT_CONCURRENCY: z.coerce.number().int().min(1).max(8).default(2),
 	EXPORT_MAX_TIMEOUT_MS: z.coerce.number().int().min(1000).max(10000).default(10000)
 });

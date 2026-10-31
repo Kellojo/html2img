@@ -16,7 +16,7 @@ RUN pnpm build
 FROM node:24-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
-LABEL org.opencontainers.image.version="1.0.1"
+LABEL org.opencontainers.image.version="1.0.2"
 ENV DATABASE_PATH=/data/html2img.db
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 RUN corepack enable pnpm \

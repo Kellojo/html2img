@@ -108,6 +108,21 @@ curl -X POST http://localhost:3000/api/v1/export/email \
   -o export.png
 ```
 
+### `POST /api/v1/strip`
+
+Authenticate with an API key. Strips HTML tags and decodes entities, returning plain text:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/strip \
+  -H "Authorization: Bearer h2i_..." \
+  -H "Content-Type: application/json" \
+  -d '{"html":"<div><p>Hello &amp; welcome</p></div>"}'
+# → { "text": "Hello & welcome" }
+```
+
+Decodes common HTML entities (`&amp;`, `&lt;`, `&pound;`, `&euro;`, `&#163;`, etc.)
+and normalises whitespace.
+
 ### Other endpoints (session-authenticated, used by the UI)
 
 | Method   | Path                              | Description                               |

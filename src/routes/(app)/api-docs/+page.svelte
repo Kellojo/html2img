@@ -418,6 +418,65 @@ with open('export.png', 'wb') as f:
 			</Card.Content>
 		</Card.Root>
 
+		<!-- Strip endpoint -->
+		<Card.Root id="strip">
+			<Card.Header>
+				<Card.Title>POST /api/v1/strip</Card.Title>
+				<Card.Description>Strip HTML tags and decode entities, returning plain text.</Card.Description>
+			</Card.Header>
+			<Card.Content class="flex flex-col gap-6">
+				<div class="flex items-center gap-3">
+					<Badge variant="secondary" class="font-mono text-sm px-3 py-1">POST</Badge>
+					<code class="bg-muted rounded px-2 py-1 font-mono text-sm">/api/v1/strip</code>
+				</div>
+
+				<hr class="my-4" />
+
+				<div>
+					<h3 class="text-sm font-semibold mb-2">Request body</h3>
+					<table class="w-full text-sm">
+						<thead>
+							<tr class="border-b">
+								<th class="py-2 text-left font-medium text-muted-foreground">Field</th>
+								<th class="py-2 text-left font-medium text-muted-foreground">Type</th>
+								<th class="py-2 text-left font-medium text-muted-foreground">Required</th>
+								<th class="py-2 text-left font-medium text-muted-foreground">Description</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="py-2 font-mono">html</td>
+								<td class="py-2 font-mono text-xs">string</td>
+								<td class="py-2"><Badge variant="outline" class="text-[10px]">Yes</Badge></td>
+								<td class="py-2 text-muted-foreground">HTML string to strip (1–1,000,000 chars)</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<hr class="my-4" />
+
+				<div>
+					<h3 class="text-sm font-semibold mb-2">Example</h3>
+					<div class="bg-muted/50 relative rounded-lg border p-3">
+						<pre class="text-sm overflow-x-auto"><code>{`curl -X POST http://localhost:3000/api/v1/strip \\
+  -H "Authorization: Bearer h2i_YOUR_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"html":"<div><p>Hello &amp; welcome</p><span> to our <b>site</b></span></div>"}'`}</code></pre>
+					</div>
+					<p class="text-muted-foreground text-sm mt-2">
+						Response: <code class="bg-muted rounded px-1 font-mono text-xs">{'{ "text": "Hello & welcome to our site" }'}</code>
+					</p>
+				</div>
+
+				<p class="text-muted-foreground text-sm">
+					Uses the same <code class="bg-muted rounded px-1 font-mono text-xs">Authorization: Bearer h2i_...</code>
+					header and <code class="bg-muted rounded px-1 font-mono text-xs">export:create</code> scope as the export endpoint.
+					Decodes common HTML entities (&amp;amp;, &amp;lt;, &amp;pound;, &amp;euro;, etc.) and normalises whitespace.
+				</p>
+			</Card.Content>
+		</Card.Root>
+
 		<!-- Other endpoints -->
 		<Card.Root id="other-endpoints">
 			<Card.Header>

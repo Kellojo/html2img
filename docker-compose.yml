@@ -5,10 +5,10 @@ services:
       - '3000:3000'
     environment:
       DATABASE_PATH: /data/html2img.db
+      APP_SECRET: 'change-me-to-a-long-random-string'
       # Uncomment (or set in an .env file next to this compose file) to customize:
       # ENABLE_SIGNUP: 'true'
       # ENABLE_PASSWORD_LOGIN: 'true'
-      # APP_SECRET: 'change-me-to-a-long-random-string'
       # ORIGIN: 'https://html2img.example.com'
     volumes:
       - data:/data

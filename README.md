@@ -30,18 +30,18 @@ Open http://localhost:5173, sign up, and start exporting.
 
 Copy `.env.example` to `.env` and adjust as needed.
 
-| Variable                  | Default              | Description                                           |
-| ------------------------- | -------------------- | ----------------------------------------------------- |
-| `DATABASE_PATH`           | `./data/html2img.db` | SQLite database file                                  |
-| `APP_SECRET`              | _(generated)_        | Auth secret; auto-generated next to the DB when unset |
-| `ENABLE_SIGNUP`           | `true`               | Allow new account sign-up                             |
-| `ENABLE_PASSWORD_LOGIN`   | `true`               | Allow email/password login                            |
-| `AUTO_PROMOTE_FIRST_USER` | `true`               | Promote the first registered user to admin            |
-| `PORT`                    | `3000`               | HTTP port                                             |
-| `HOST`                    | `0.0.0.0`            | Bind address                                          |
-| `ORIGIN`                  | _(unset)_            | Public origin, used by auth when behind a proxy       |
-| `EXPORT_CONCURRENCY`      | `2`                  | Max concurrent browser renders                        |
-| `EXPORT_MAX_TIMEOUT_MS`   | `10000`              | Hard cap for a single export (10 seconds)             |
+| Variable                  | Default              | Description                                                                                                        |
+| ------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `DATABASE_PATH`           | `./data/html2img.db` | SQLite database file                                                                                               |
+| `APP_SECRET`              | _(required)_         | Auth secret (≥ 16 chars); generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+| `ENABLE_SIGNUP`           | `true`               | Allow new account sign-up                                                                                          |
+| `ENABLE_PASSWORD_LOGIN`   | `true`               | Allow email/password login                                                                                         |
+| `AUTO_PROMOTE_FIRST_USER` | `true`               | Promote the first registered user to admin                                                                         |
+| `PORT`                    | `3000`               | HTTP port                                                                                                          |
+| `HOST`                    | `0.0.0.0`            | Bind address                                                                                                       |
+| `ORIGIN`                  | _(unset)_            | Public origin, used by auth when behind a proxy                                                                    |
+| `EXPORT_CONCURRENCY`      | `2`                  | Max concurrent browser renders                                                                                     |
+| `EXPORT_MAX_TIMEOUT_MS`   | `10000`              | Hard cap for a single export (10 seconds)                                                                          |
 
 ## Docker
 

@@ -14,6 +14,10 @@ export function getAppSecret(): string {
 	const generated = randomBytes(32).toString('hex');
 	fs.mkdirSync(path.dirname(secretPath), { recursive: true });
 	fs.writeFileSync(secretPath, generated, { mode: 0o600 });
+	console.warn(
+		`⚠  APP_SECRET not set — auto-generated secret saved to ${secretPath}. ` +
+			'Set APP_SECRET in your environment to persist sessions across restarts.'
+	);
 	return generated;
 }
 

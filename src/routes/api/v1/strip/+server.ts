@@ -10,7 +10,11 @@ const bodySchema = z.object({
 });
 
 function stripHtml(html: string): string {
-	return load(html)
+	const $ = load(html);
+	// Remove non-content elements whose raw text would otherwise leak into the
+	// output (e.g. CSS rules and script bodies).
+	$('style, script, noscript, template, head').remove();
+	return $.root()
 		.text()
 		.replace(/\s+/g, ' ')
 		.trim();

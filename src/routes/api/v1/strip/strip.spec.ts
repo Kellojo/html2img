@@ -117,4 +117,39 @@ describe('POST /api/v1/strip', () => {
 		const body = await res.json();
 		expect(body.text).toBe('A B £');
 	});
+
+	it('excludes CSS and script content from the output', async () => {
+		const { rawKey } = await createApiKey(getDb(), { userId: 'u1', label: 'k' });
+		const html = `<!doctype html>
+<html>
+<head>
+  <style>.button { color: red; font-size: 16px; }</style>
+  <script>const secret = "not-visible-text";</script>
+</head>
+<body>
+  <p>Hello world</p>
+  <style>p { margin: 0; }</style>
+  <script>doSomething();</script>
+</body>
+</html>`;
+		const res = await call({ html }, `Bearer ${rawKey}`);
+		expect(res.status).toBe(200);
+		const body = await res.json();
+		expect(body.text).toBe('Hello world');
+		expect(body.text).not.toContain('color');
+		expect(body.text).not.toContain('secret');
+		expect(body.text).not.toContain('margin');
+		expect(body.text).not.toContain('doSomething');
+	});
+
+	it('excludes template content but keeps visible text', async () => {
+		const { rawKey } = await createApiKey(getDb(), { userId: 'u1', label: 'k' });
+		const res = await call(
+			{ html: '<template><span>hidden</span></template><p>visible</p>' },
+			`Bearer ${rawKey}`
+		);
+		expect(res.status).toBe(200);
+		const body = await res.json();
+		expect(body.text).toBe('visible');
+	});
 });
